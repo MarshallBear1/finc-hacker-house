@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Black outline -->
+  <path fill="#000" d="M0,0h6v6H0z M0,6h6v6H0z M6,6h6v6H6z M0,12h6v6H0z M6,12h6v6H6z M12,12h6v6H12z M0,18h6v6H0z M6,18h6v6H6z M12,18h6v6H12z M18,18h6v6H18z M0,24h6v6H0z M6,24h6v6H6z M12,24h6v6H12z M18,24h6v6H18z M24,24h6v6H24z M0,30h6v6H0z M6,30h6v6H6z M12,30h6v6H12z M18,30h6v6H18z M24,30h6v6H24z M30,30h6v6H30z M0,36h6v6H0z M6,36h6v6H6z M18,36h6v6H18z M24,36h6v6H24z M0,42h6v6H0z M24,42h6v6H24z"/>
+  <!-- White fill -->
+  <path fill="#fff" d="M6,12h6v6H6z M6,18h6v6H6z M12,18h6v6H12z M6,24h6v6H6z M12,24h6v6H12z M18,24h6v6H18z M6,30h6v6H6z M12,30h6v6H12z M18,30h6v6H18z M24,30h6v6H24z M12,36h6v6H12z"/>
+</svg>

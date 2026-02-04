@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.Inc Hacker House</title>
+    <!-- SNES.css - 16-bit Super Nintendo style framework -->
+    <link rel="stylesheet" href="https://unpkg.com/snes.css@1.0.1/dist/snes.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: url("cursor.svg") 0 0, auto;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #FFE135 0%, #E6C800 100%);
+            background-color: #FFE135;
+            font-family: 'Press Start 2P', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            image-rendering: pixelated;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #000;
+            text-shadow:
+                4px 4px 0px #333,
+                -2px -2px 0px #FF6B6B,
+                2px -2px 0px #4ECDC4;
+            letter-spacing: 4px;
+            animation: glitchTitle 4s infinite;
+        }
+
+        @keyframes glitchTitle {
+            0%, 95%, 100% { transform: translate(0); }
+            96% { transform: translate(-3px, 2px); }
+            97% { transform: translate(3px, -2px); }
+            98% { transform: translate(-2px, -2px); }
+            99% { transform: translate(2px, 2px); }
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: #333;
+            margin-top: 12px;
+            letter-spacing: 4px;
+        }
+
+        .countdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #0f0f1a;
+            border-bottom: 4px solid #0f0f1a;
+        }
+
+        .countdown-label {
+            color: #FF6B6B;
+            font-size: 8px;
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .countdown {
+            color: #00FF88;
+            font-size: 16px;
+            text-shadow: 0 0 10px #00FF88, 2px 2px 0 #002211;
+            letter-spacing: 3px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Large TV */
+        .tv-container {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* TV Glow effect */
+        .tv-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 750px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(0,255,100,0.12) 0%, transparent 60%);
+            pointer-events: none;
+            animation: tvGlow 3s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes tvGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .tv-wrapper {
+            position: relative;
+            width: 700px;
+            height: 520px;
+        }
+
+        .tv-frame {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #5a4a3a 0%, #3a2a1a 50%, #2a1a0a 100%);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow:
+                inset 0 0 40px rgba(0,0,0,0.5),
+                10px 10px 0px #000;
+            position: relative;
+            border: 8px solid #1a0a00;
+        }
+
+        .tv-frame::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 4px solid #4a3a2a;
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        /* TV Screen */
+        .screen-area {
+            width: 70%;
+            height: 80%;
+            background: #000;
+            border-radius: 50% / 8%;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                inset 0 0 60px rgba(0,255,0,0.15),
+                0 0 20px rgba(0,255,0,0.4),
+                0 0 40px rgba(0,255,0,0.2);
+            border: 5px solid #111;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .room-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px;
+            text-align: center;
+            z-index: 6;
+        }
+
+        .room-name {
+            font-size: 14px;
+            color: #00FF00;
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px #00FF00;
+        }
+
+        .room-price {
+            font-size: 10px;
+            color: #FFE135;
+            text-shadow: 0 0 10px #FFE135;
+        }
+
+        .scanlines {
+            display: none;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.7);
+            pointer-events: none;
+            z-index: 5;
+            border-radius: 50% / 8%;
+        }
+
+        .static-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .static-canvas.active {
+            opacity: 1;
+        }
+
+        /* ===== VINTAGE TV EFFECTS ===== */
+
+        /* On-Screen Display (OSD) - like real vintage TVs */
+        .tv-osd {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tv-osd.visible {
+            opacity: 1;
+        }
+
+        .osd-channel {
+            background: rgba(0,0,0,0.8);
+            color: #00ff00;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            padding: 8px 15px;
+            text-shadow: 0 0 15px #00ff00, 3px 3px 0 #000;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+
+        .osd-name {
+            background: rgba(0,0,0,0.8);
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            padding: 5px 10px;
+            margin-top: 5px;
+            text-shadow: 2px 2px 0 #000;
+            text-align: center;
+        }
+
+        /* Hidden effects - keeping picture clear */
+        .vhs-tracking,
+        .tracking-line,
+        .vhs-glitch,
+        .chromatic,
+        .rgb-grid,
+        .scan-beam,
+        .interference {
+            display: none;
+        }
+
+        /* Screen reflection - subtle, doesn't obscure */
+        .screen-reflection {
+            position: absolute;
+            top: 8%;
+            left: 12%;
+            width: 25%;
+            height: 15%;
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.08) 0%,
+                transparent 50%
+            );
+            pointer-events: none;
+            z-index: 6;
+            border-radius: 50%;
+        }
+
+        /* Power LED */
+        .power-led {
+            position: absolute;
+            bottom: 30px;
+            left: 25px;
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff00, 0 0 15px #00ff00;
+            animation: ledPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ledPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px #00ff00, 0 0 15px #00ff00; }
+            50% { opacity: 0.7; box-shadow: 0 0 4px #00ff00, 0 0 8px #00ff00; }
+        }
+
+        /* TV brand badge */
+        .tv-brand {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 8px;
+            font-family: Arial, sans-serif;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* CRT turn on effect - disabled */
+        .screen-area.crt-on {
+            /* No animation - just static on screen */
+        }
+
+        /* TV Controls */
+        .tv-controls {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .tv-knob {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #666 0%, #222 100%);
+            border-radius: 50%;
+            border: 4px solid #111;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .tv-knob:hover {
+            background: radial-gradient(circle, #888 0%, #444 100%);
+            transform: scale(1.1);
+        }
+
+        .channel-num {
+            background: #111;
+            color: #FF0000;
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 3px solid #333;
+        }
+
+        .tv-speaker {
+            position: absolute;
+            right: 15px;
+            bottom: 25px;
+            width: 50px;
+            height: 70px;
+            background: repeating-linear-gradient(
+                0deg,
+                #2a2a2a 0px,
+                #2a2a2a 4px,
+                #1a1a1a 4px,
+                #1a1a1a 8px
+            );
+            border-radius: 4px;
+            border: 3px solid #111;
+        }
+
+        /* Channel buttons */
+        .channel-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+            max-width: 750px;
+        }
+
+        .channel-btn {
+            padding: 12px 16px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 3px solid #333;
+            border-radius: 8px;
+            color: #00FF00;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            text-shadow: 0 0 8px #00FF00;
+        }
+
+        .channel-btn:hover {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            color: #FFE135;
+            text-shadow: 0 0 15px #FFE135;
+            transform: translateY(-3px);
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.5),
+                0 0 20px rgba(255,225,53,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+            border-color: #FFE135;
+        }
+
+        .channel-btn.active {
+            background: linear-gradient(180deg, #FFE135 0%, #E6C800 100%);
+            color: #000;
+            text-shadow: none;
+            border-color: #FFF;
+            box-shadow:
+                0 0 25px rgba(255,225,53,0.6),
+                0 0 50px rgba(255,225,53,0.3),
+                inset 0 2px 0 rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Info section - Clean 16-bit menu style */
+        .info-section {
+            background: #1a1a2e;
+            border: 6px solid #0f0f1a;
+            box-shadow: 8px 8px 0 #000;
+            padding: 0;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .info-section::before {
+            content: 'RESERVE YOUR SPOT';
+            display: block;
+            background: linear-gradient(180deg, #4a1942 0%, #2d1229 100%);
+            border-bottom: 4px solid #0f0f1a;
+            padding: 14px 20px;
+            color: #fff;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .start-date {
+            background: #12121f;
+            color: #00FF88;
+            font-size: 11px;
+            padding: 18px 20px;
+            border-bottom: 4px solid #0f0f1a;
+            text-shadow: 0 0 10px #00FF88, 2px 2px 0 #002211;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            background: #1a1a2e;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0f0f1a;
+            border: 3px solid #2a2a4a;
+            border-radius: 0;
+            color: #00FF88;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .email-input::placeholder {
+            color: #444;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #00FF88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(180deg, #FFE135 0%, #E6C800 100%);
+            border: 4px solid #000;
+            border-radius: 0;
+            color: #000;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .submit-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .price-tag {
+            background: #4a1942;
+            border-top: 4px solid #0f0f1a;
+            color: #FFE135;
+            font-size: 10px;
+            padding: 14px 20px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,225,53,0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 8px;
+            color: #333;
+            letter-spacing: 2px;
+        }
+
+        .footer-icons {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .pixel-icon {
+            width: 8px;
+            height: 8px;
+            background: #333;
+            box-shadow:
+                4px 0 0 #333, 8px 0 0 #333, 12px 0 0 #333,
+                0 4px 0 #333, 4px 4px 0 #333, 8px 4px 0 #333, 12px 4px 0 #333,
+                0 8px 0 #333, 4px 8px 0 #333, 8px 8px 0 #333, 12px 8px 0 #333,
+                0 12px 0 #333, 4px 12px 0 #333, 8px 12px 0 #333, 12px 12px 0 #333;
+            transition: all 0.2s;
+        }
+
+        .pixel-icon:hover {
+            background: #000;
+            box-shadow:
+                4px 0 0 #000, 8px 0 0 #000, 12px 0 0 #000,
+                0 4px 0 #000, 4px 4px 0 #000, 8px 4px 0 #000, 12px 4px 0 #000,
+                0 8px 0 #000, 4px 8px 0 #000, 8px 8px 0 #000, 12px 8px 0 #000,
+                0 12px 0 #000, 4px 12px 0 #000, 8px 12px 0 #000, 12px 12px 0 #000;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Walking Avatar */
+        .avatar-container {
+            position: absolute;
+            bottom: 60px;
+            width: 64px;
+            height: 64px;
+            z-index: 15;
+            image-rendering: pixelated;
+            pointer-events: none;
+            animation: walkAcross 12s linear infinite;
+        }
+
+        .avatar {
+            width: 64px;
+            height: 64px;
+            background-size: 192px 256px;
+            background-position: 0 -128px;
+            animation: walkCycle 0.6s steps(3, end) infinite;
+        }
+
+        /* Walk cycle - 3 frames horizontally on row 2 (right facing) */
+        @keyframes walkCycle {
+            from { background-position: 0 -128px; }
+            to { background-position: -192px -128px; }
+        }
+
+        /* Smooth walking across screen - one direction only */
+        @keyframes walkAcross {
+            from { left: -70px; }
+            to { left: calc(100% + 10px); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>F.INC HACKER HOUSE</h1>
+        <p class="subtitle">SAN FRANCISCO // 2026</p>
+    </header>
+
+    <div class="tv-container">
+        <div class="tv-wrapper">
+            <div class="tv-frame">
+                <div class="screen-area" id="screen-area">
+                    <img src="" alt="" class="room-image" id="room-image">
+                    <div class="avatar-container walking" id="avatar-container">
+                        <div class="avatar" id="avatar"></div>
+                    </div>
+                    <div class="room-overlay">
+                        <div class="room-name" id="room-name">LIVING ROOM</div>
+                        <div class="room-price" id="room-price">SHARED SPACE</div>
+                    </div>
+                    <div class="vignette"></div>
+                    <div class="screen-reflection"></div>
+                    <div class="tv-osd" id="tv-osd">
+                        <div class="osd-channel" id="osd-channel">CH 1</div>
+                        <div class="osd-name" id="osd-name">LIVING ROOM</div>
+                    </div>
+                    <canvas class="static-canvas" id="static-canvas"></canvas>
+                </div>
+                <div class="power-led"></div>
+                <div class="tv-brand">F.INC</div>
+                <div class="tv-controls">
+                    <div class="tv-knob" onclick="changeChannel(-1)" title="Channel Up"></div>
+                    <div class="channel-num">CH<span id="channel-num">1</span></div>
+                    <div class="tv-knob" onclick="changeChannel(1)" title="Channel Down"></div>
+                </div>
+                <div class="tv-speaker"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="channel-list">
+        <button class="snes-button channel-btn active" onclick="setChannel(0)">1:LIVING</button>
+        <button class="snes-button channel-btn" onclick="setChannel(1)">2:KITCHEN</button>
+        <button class="snes-button channel-btn" onclick="setChannel(2)">3:BATH</button>
+        <button class="snes-button channel-btn" onclick="setChannel(3)">4:GARDEN</button>
+        <button class="snes-button channel-btn" onclick="setChannel(4)">5:BED1</button>
+        <button class="snes-button channel-btn" onclick="setChannel(5)">6:BED2</button>
+        <button class="snes-button channel-btn" onclick="setChannel(6)">7:BED3</button>
+        <button class="snes-button channel-btn" onclick="setChannel(7)">8:BED4</button>
+        <button class="snes-button channel-btn" onclick="setChannel(8)">9:BED5</button>
+    </div>
+
+    <div class="info-section">
+        <div class="countdown-row">
+            <span class="countdown-label">SPOTS CLOSE IN</span>
+            <span class="countdown" id="countdown">72:00:00</span>
+        </div>
+        <div class="start-date">STARTS FEB 10, 2026</div>
+        <form class="email-form" onsubmit="submitEmail(event)">
+            <input type="email" class="email-input" placeholder="YOUR EMAIL" required>
+            <button type="submit" class="submit-btn">RESERVE SPOT</button>
+        </form>
+        <div class="price-tag">$2,000 / ROOM / MONTH</div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-text">BUILD THE FUTURE // FOUNDERS INC 2026</div>
+    </footer>
+
+    <div class="particles" id="particles"></div>
+
+    <script>
+        const rooms = [
+            { image: 'images/rooms/living-room.avif', name: 'LIVING ROOM', price: 'SHARED SPACE', avatar: 'images/sprites/dc1.png' },
+            { image: 'images/rooms/kitchen.avif', name: 'KITCHEN', price: 'SHARED SPACE', avatar: 'images/sprites/dc2.png' },
+            { image: 'images/rooms/bathroom.avif', name: 'BATHROOM', price: 'SHARED SPACE', avatar: 'images/sprites/dc3.png' },
+            { image: 'images/rooms/garden.avif', name: 'GARDEN', price: 'SHARED SPACE', avatar: 'images/sprites/dc4.png' },
+            { image: 'images/rooms/bedroom-1.avif', name: 'BEDROOM 1', price: '$2,000/MONTH', avatar: 'images/sprites/dc5.png' },
+            { image: 'images/rooms/bedroom-2.avif', name: 'BEDROOM 2', price: '$2,000/MONTH', avatar: 'images/sprites/dc6.png' },
+            { image: 'images/rooms/bedroom-3.avif', name: 'BEDROOM 3', price: '$2,000/MONTH', avatar: 'images/sprites/dc7.png' },
+            { image: 'images/rooms/bedroom-4.avif', name: 'BEDROOM 4', price: '$2,000/MONTH', avatar: 'images/sprites/dc8.png' },
+            { image: 'images/rooms/bedroom-5.avif', name: 'BEDROOM 5', price: '$2,000/MONTH', avatar: 'images/sprites/dc9.png' }
+        ];
+
+        let currentChannel = 0;
+        const canvas = document.getElementById('static-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawStatic() {
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // Create TV static with horizontal line artifacts
+            for (let y = 0; y < canvas.height; y++) {
+                // Random horizontal offset for each line (VHS tracking effect)
+                const lineNoise = Math.random() < 0.1 ? (Math.random() - 0.5) * 50 : 0;
+                const lineBrightness = Math.random() < 0.05 ? 0.3 : 1; // Random dark lines
+
+                for (let x = 0; x < canvas.width; x++) {
+                    const i = (y * canvas.width + x) * 4;
+                    let gray = Math.random() * 255 * lineBrightness;
+
+                    // Add some horizontal line correlation for more realistic static
+                    if (Math.random() < 0.3) {
+                        gray = (gray + Math.random() * 100) / 2;
+                    }
+
+                    data[i] = gray;
+                    data[i + 1] = gray;
+                    data[i + 2] = gray;
+                    data[i + 3] = 255;
+                }
+            }
+
+            // Add some horizontal glitch bars
+            const numGlitchBars = Math.floor(Math.random() * 3);
+            for (let b = 0; b < numGlitchBars; b++) {
+                const barY = Math.floor(Math.random() * canvas.height);
+                const barHeight = 2 + Math.floor(Math.random() * 8);
+                for (let y = barY; y < Math.min(barY + barHeight, canvas.height); y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        const i = (y * canvas.width + x) * 4;
+                        data[i] = 255;
+                        data[i + 1] = 255;
+                        data[i + 2] = 255;
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function showStatic(callback) {
+            canvas.classList.add('active');
+            let frames = 0;
+            const maxFrames = 15;
+            const animate = () => {
+                drawStatic();
+                frames++;
+                if (frames < maxFrames) {
+                    requestAnimationFrame(animate);
+                } else {
+                    canvas.classList.remove('active');
+                    if (callback) callback();
+                }
+            };
+            animate();
+        }
+
+        let osdTimeout = null;
+
+        function showOSD() {
+            const osd = document.getElementById('tv-osd');
+            const osdChannel = document.getElementById('osd-channel');
+            const osdName = document.getElementById('osd-name');
+            const room = rooms[currentChannel];
+
+            osdChannel.textContent = 'CH ' + (currentChannel + 1);
+            osdName.textContent = room.name;
+            osd.classList.add('visible');
+
+            // Clear existing timeout
+            if (osdTimeout) clearTimeout(osdTimeout);
+
+            // Hide OSD after 3 seconds
+            osdTimeout = setTimeout(() => {
+                osd.classList.remove('visible');
+            }, 3000);
+        }
+
+        function updateTV() {
+            const room = rooms[currentChannel];
+            document.getElementById('room-image').src = room.image;
+            document.getElementById('room-name').textContent = room.name;
+            document.getElementById('room-price').textContent = room.price;
+            document.getElementById('channel-num').textContent = currentChannel + 1;
+            document.querySelectorAll('.channel-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === currentChannel);
+            });
+            // Update avatar sprite
+            document.getElementById('avatar').style.backgroundImage = `url('${room.avatar}')`;
+            showOSD();
+        }
+
+        function changeChannel(dir) {
+            showStatic(() => {
+                currentChannel = (currentChannel + dir + rooms.length) % rooms.length;
+                updateTV();
+            });
+        }
+
+        function setChannel(ch) {
+            if (ch !== currentChannel) {
+                showStatic(() => {
+                    currentChannel = ch;
+                    updateTV();
+                });
+            }
+        }
+
+        updateTV();
+
+        let countdownTime = 72 * 60 * 60;
+        function updateCountdown() {
+            const hours = Math.floor(countdownTime / 3600);
+            const minutes = Math.floor((countdownTime % 3600) / 60);
+            const seconds = countdownTime % 60;
+            document.getElementById('countdown').textContent =
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (countdownTime > 0) countdownTime--;
+        }
+        setInterval(updateCountdown, 1000);
+
+        function submitEmail(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            alert('SPOT RESERVED! We will contact: ' + email);
+            e.target.reset();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') changeChannel(-1);
+            if (e.key === 'ArrowDown') changeChannel(1);
+            if (e.key >= '1' && e.key <= '9') setChannel(parseInt(e.key) - 1);
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.animationDuration = (8 + Math.random() * 6) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
